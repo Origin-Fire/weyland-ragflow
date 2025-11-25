@@ -87,6 +87,19 @@ The [.env](./.env) file contains important environment variables for Docker.
 >   - `RAGFLOW_IMAGE=swr.cn-north-4.myhuaweicloud.com/infiniflow/ragflow:nightly` or,
 >   - `RAGFLOW_IMAGE=registry.cn-hangzhou.aliyuncs.com/infiniflow/ragflow:nightly`.
 
+### Remote embedding overrides (optional)
+
+Use these variables when you prefer to call an external OpenAI-compatible embedding endpoint (for example, a RunPod serverless worker) instead of the bundled TEI container.
+
+- `EMBEDDING_MODEL_NAME`  
+  The remote embedding model identifier (e.g., `KaLM-Embedding-Gemma3-12B-2511`).
+- `EMBEDDING_MODEL_FACTORY`  
+  Provider label such as `RunPod`, `OpenAI-API-Compatible`, or `VLLM`. This must match one of the entries in `conf/llm_factories.json`.
+- `EMBEDDING_MODEL_API_KEY`  
+  API key for the remote endpoint.
+- `EMBEDDING_MODEL_BASE_URL`  
+  Base URL for the OpenAI-compatible API **without** the trailing `/v1`. For RunPod this looks like `https://api.runpod.ai/v2/<ENDPOINT_ID>/openai/`.
+
 ### Timezone
 
 - `TZ`  

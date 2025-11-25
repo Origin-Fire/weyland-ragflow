@@ -41,6 +41,7 @@ const llmFactoryToUrlMap = {
   [LLMFactory.GPUStack]: 'https://docs.gpustack.ai/latest/quickstart',
   [LLMFactory.VLLM]: 'https://docs.vllm.ai/en/latest/',
   [LLMFactory.TokenPony]: 'https://docs.tokenpony.cn/#/',
+  [LLMFactory.RunPod]: 'https://docs.runpod.io/serverless/workers/github-integration',
 };
 type LlmFactory = keyof typeof llmFactoryToUrlMap;
 
@@ -134,6 +135,10 @@ const OllamaModal = ({
     [LLMFactory.OpenRouter]: [
       { value: 'chat', label: 'chat' },
       { value: 'image2text', label: 'image2text' },
+    ],
+    [LLMFactory.RunPod]: [
+      { value: 'embedding', label: 'embedding' },
+      { value: 'rerank', label: 'rerank' },
     ],
     Default: [
       { value: 'chat', label: 'chat' },

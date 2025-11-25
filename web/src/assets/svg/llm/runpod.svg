@@ -1,0 +1,9 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M48 80L128 32L208 80V176L128 224L48 176V80Z" fill="#6F3FF5"/>
+  <path d="M48 80V176L128 224V128L48 80Z" fill="#4B1BA8"/>
+  <path d="M208 80V176L128 224V128L208 80Z" fill="#8B5CFF"/>
+  <path d="M74 84L128 52L182 84L128 116L74 84Z" fill="#9F7CFF"/>
+  <path d="M128 116L182 84V144L128 176V116Z" fill="#4F1AA5"/>
+  <path d="M128 116L74 84V144L128 176V116Z" fill="#371170"/>
+</svg>
+

@@ -89,6 +89,7 @@ export const LlmIcon = ({
     LLMFactory.Gemini,
     LLMFactory.StepFun,
     // LLMFactory.DeerAPI,
+    LLMFactory.RunPod,
   ];
   if (svgIcons.includes(name as LLMFactory)) {
     return (

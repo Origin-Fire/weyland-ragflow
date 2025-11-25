@@ -613,7 +613,7 @@ class LmStudioEmbed(LocalAIEmbed):
 
 
 class OpenAI_APIEmbed(OpenAIEmbed):
-    _FACTORY_NAME = ["VLLM", "OpenAI-API-Compatible"]
+    _FACTORY_NAME = ["VLLM", "OpenAI-API-Compatible", "RunPod"]
 
     def __init__(self, key, model_name, base_url):
         if not base_url:
@@ -621,6 +621,60 @@ class OpenAI_APIEmbed(OpenAIEmbed):
         base_url = urljoin(base_url, "v1")
         self.client = OpenAI(api_key=key, base_url=base_url)
         self.model_name = model_name.split("___")[0]
+
+
+class RunPodEmbed(Base):
+    _FACTORY_NAME = "RunPod"
+
+    def __init__(self, key, model_name, base_url, **kwargs):
+        if not base_url:
+            raise ValueError("RunPod base url cannot be None")
+        self.api_key = key
+        self.model_name = model_name
+        self.base_url = base_url.rstrip("/")
+        self.timeout = float(os.environ.get("RUNPOD_TIMEOUT_SECONDS", "120"))
+        # Use OpenAI-compatible endpoint for load balancing workers
+        self.endpoint = f"{self.base_url}/v1/embeddings"
+
+    def _request_embeddings(self, texts: list[str]) -> list[list[float]]:
+        # OpenAI-compatible API format
+        payload = {"input": texts, "model": self.model_name}
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        response = requests.post(self.endpoint, json=payload, headers=headers, timeout=self.timeout)
+        response.raise_for_status()
+        body = response.json()
+        # OpenAI format response
+        data = body.get("data", [])
+        if not data:
+            raise ValueError("RunPod response does not contain embeddings")
+        return [item["embedding"] for item in data]
+
+    def encode(self, texts: list[str]):
+        # Batch requests to avoid timeouts and improve performance
+        batch_size = 16
+        ress = []
+        token_count = 0
+        
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i : i + batch_size]
+            embeddings = self._request_embeddings(batch)
+            ress.extend(embeddings)
+            # Estimate token count (rough estimate: ~75% of word count)
+            token_count += sum(len(text.split()) * 0.75 for text in batch)
+            
+            # Small delay to avoid RunPod rate limiting (430 errors)
+            # Only sleep between batches, not after the last one
+            if i + batch_size < len(texts):
+                time.sleep(0.5)
+        
+        return np.array(ress), int(token_count)
+
+    def encode_queries(self, text: str):
+        embeddings = self._request_embeddings([text])
+        return np.array(embeddings[0]), 0
 
 
 class CoHereEmbed(Base):

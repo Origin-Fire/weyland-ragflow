@@ -30,6 +30,7 @@ export const LocalLlmFactories = [
   LLMFactory.Ollama,
   LLMFactory.Xinference,
   LLMFactory.LocalAI,
+  LLMFactory.RunPod,
   LLMFactory.LMStudio,
   LLMFactory.OpenAiAPICompatible,
   LLMFactory.TogetherAI,

@@ -29,6 +29,7 @@ You have two options for configuring your model API key:
    - Update `factory` with your chosen LLM.
    - Update `api_key` with yours.
    - Update `base_url` if you use a proxy to connect to the remote service.
+   - When pointing to an OpenAI-compatible embedding endpoint such as a RunPod serverless worker, also set `EMBEDDING_MODEL_NAME`, `EMBEDDING_MODEL_FACTORY`, `EMBEDDING_MODEL_API_KEY`, and `EMBEDDING_MODEL_BASE_URL` in your `.env` file so Docker can interpolate them into `service_conf.yaml`.
 3. Reboot your system for your changes to take effect.
 4. Log into RAGFlow.  
    _After logging into RAGFlow, you will find your chosen model appears under **Added models** on the **Model providers** page._

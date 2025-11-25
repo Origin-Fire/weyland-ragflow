@@ -35,8 +35,10 @@ redis:
 user_default_llm:
   default_models:
     embedding_model:
-      api_key: 'xxx'
-      base_url: 'http://${TEI_HOST}:80'
+      name: '${EMBEDDING_MODEL_NAME:-}'
+      factory: '${EMBEDDING_MODEL_FACTORY:-}'
+      api_key: '${EMBEDDING_MODEL_API_KEY:-xxx}'
+      base_url: '${EMBEDDING_MODEL_BASE_URL:-http://${TEI_HOST}:80}'
 # postgres:
 #   name: '${POSTGRES_DBNAME:-rag_flow}'
 #   user: '${POSTGRES_USER:-rag_flow}'

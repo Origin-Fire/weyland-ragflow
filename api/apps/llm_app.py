@@ -197,17 +197,21 @@ def add_llm():
     }
 
     msg = ""
+    skip_validation = factory == "RunPod"
     mdl_nm = llm["llm_name"].split("___")[0]
     extra = {"provider": factory}
     if llm["model_type"] == LLMType.EMBEDDING.value:
-        assert factory in EmbeddingModel, f"Embedding model from {factory} is not supported yet."
-        mdl = EmbeddingModel[factory](key=llm["api_key"], model_name=mdl_nm, base_url=llm["api_base"])
-        try:
-            arr, tc = mdl.encode(["Test if the api key is available"])
-            if len(arr[0]) == 0:
-                raise Exception("Fail")
-        except Exception as e:
-            msg += f"\nFail to access embedding model({mdl_nm})." + str(e)
+        if skip_validation:
+            logging.info("Skip embedding validation for %s/%s", factory, mdl_nm)
+        else:
+            assert factory in EmbeddingModel, f"Embedding model from {factory} is not supported yet."
+            mdl = EmbeddingModel[factory](key=llm["api_key"], model_name=mdl_nm, base_url=llm["api_base"])
+            try:
+                arr, tc = mdl.encode(["Test if the api key is available"])
+                if len(arr[0]) == 0:
+                    raise Exception("Fail")
+            except Exception as e:
+                msg += f"\nFail to access embedding model({mdl_nm})." + str(e)
     elif llm["model_type"] == LLMType.CHAT.value:
         assert factory in ChatModel, f"Chat model from {factory} is not supported yet."
         mdl = ChatModel[factory](
@@ -223,16 +227,19 @@ def add_llm():
         except Exception as e:
             msg += f"\nFail to access model({factory}/{mdl_nm})." + str(e)
     elif llm["model_type"] == LLMType.RERANK:
-        assert factory in RerankModel, f"RE-rank model from {factory} is not supported yet."
-        try:
-            mdl = RerankModel[factory](key=llm["api_key"], model_name=mdl_nm, base_url=llm["api_base"])
-            arr, tc = mdl.similarity("Hello~ RAGFlower!", ["Hi, there!", "Ohh, my friend!"])
-            if len(arr) == 0:
-                raise Exception("Not known.")
-        except KeyError:
-            msg += f"{factory} dose not support this model({factory}/{mdl_nm})"
-        except Exception as e:
-            msg += f"\nFail to access model({factory}/{mdl_nm})." + str(e)
+        if skip_validation:
+            logging.info("Skip rerank validation for %s/%s", factory, mdl_nm)
+        else:
+            assert factory in RerankModel, f"RE-rank model from {factory} is not supported yet."
+            try:
+                mdl = RerankModel[factory](key=llm["api_key"], model_name=mdl_nm, base_url=llm["api_base"])
+                arr, tc = mdl.similarity("Hello~ RAGFlower!", ["Hi, there!", "Ohh, my friend!"])
+                if len(arr) == 0:
+                    raise Exception("Not known.")
+            except KeyError:
+                msg += f"{factory} dose not support this model({factory}/{mdl_nm})"
+            except Exception as e:
+                msg += f"\nFail to access model({factory}/{mdl_nm})." + str(e)
     elif llm["model_type"] == LLMType.IMAGE2TEXT.value:
         assert factory in CvModel, f"Image to text model from {factory} is not supported yet."
         mdl = CvModel[factory](key=llm["api_key"], model_name=mdl_nm, base_url=llm["api_base"])
